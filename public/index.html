@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link 
+    rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""
+    />
+
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
+
+    <title>Weather Data</title>
+</head>
+
+<body>
+    <h1>Weather Data</h1>
+
+        <label for="moody">Enter a data into the server</label>
+        <input id="mood" value="mood"/>
+        <button id="submit">Submit your mood</button>
+
+    <div id="dataDBdisplay"></div>
+
+    <script>
+        /* Location */
+        async function submitLocation( lat, lon, mood ){
+            const data = { lat, lon, mood };
+            console.log('data send to server', data);
+            const options = {
+                method:'POST',
+                body: JSON.stringify(data),
+                headers: {"Content-Type": "application/json"},
+            };
+            
+            const response = await fetch('/api', options);
+            const json = await response.json();
+
+            console.log('location submitted', json); 
+        }
+
+        let lat = 0, lon = 0;
+        
+        if('geolocation' in navigator) {
+            /* geolocation is available */
+            console.log('geolocation available');
+            navigator.geolocation.getCurrentPosition( async (position) => {
+                console.log(position.coords.latitude, position.coords.longitude);
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+
+                /*
+                document.getElementById('latitude').textContent = lat;
+                document.getElementById('longitude').textContent = lon;
+                marker.setLatLng([lat, lon]);
+                mymap.setView([lat, lon]);
+                */
+            });
+        } 
+        else {
+            /* geolocation IS NOT available */
+            console.log('geolocation not available');
+        }
+
+        const buttonSubmit = document.getElementById("submit");
+        buttonSubmit.addEventListener('click', () =>{
+            const moodvar= document.getElementById("mood").value;
+            console.log(mood);
+            submitLocation( lat, lon, moodvar );
+        });
+
+        // 2.5 -> Querying DB
+        getData();
+
+        async function getData() {
+            const response = await fetch('/api');
+            const data = await response.json();
+            console.log('getdata ', data);
+
+            data.forEach( item => {
+                const paragraph = document.createElement('p');
+                const date = document.createElement('div');
+                const geo = document.createElement('div');
+                const root = document.createElement('div');
+                const mood = document.createElement('div');
+
+                const dateString = new Date(item.timestamp).toLocaleTimeString();
+
+                mood.textContent = `mood: ${item.mood}`;
+                date.textContent = dateString;
+                geo.textContent = `${item.lat}, ${item.lon}`;
+
+                root.append( paragraph, mood, geo, date);
+                document.body.append(root);
+            });
+        }
+
+    </script>
+</body>
+</html>
