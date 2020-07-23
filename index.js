@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 
 // Include express server
 const express = require('express');
@@ -66,3 +67,10 @@ app.get('/api', (request, response) => {
         response.json(data);
     });
 })
+
+app.get('/weather', async (request, response) => {
+    const api_url = `https://api.openweathermap.org/data/2.5/weather?lat={43.5871946}&lon={1.4777714}&appid={653f3861eb3012e12a7464b68fbbbb92}`
+    const fetch_response = await fetch(api_url);
+    const json = await fetch_response.json();
+    response.json(json);
+});
