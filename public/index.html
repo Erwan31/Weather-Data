@@ -59,20 +59,29 @@
                 const json = await response.json();
                 console.log('OW stuff', json);
 
-                const paragraph = document.createElement('p');
+                const paragraph = document.createElement('h1');
                 const temp = document.createElement('div');
                 const hum = document.createElement('div');
                 const weather = document.createElement('div');
                 const wind = document.createElement('div');
                 const root = document.createElement('div');
 
-                paragraph.textContent = 'Weather today in ' + json.name;
-                temp .textContent = json.main.temp/10 + 'ºC';
-                hum.textContent = 'Humidity ' + json.main.humidity + '%';
-                weather.textContent = json.weather[0].main;
-                wind.textContent = 'Wind speed: ' + json.wind.speed + ' km/h';
+                paragraph.textContent = 'Weather today in ' + json.weather.name;
+                temp.textContent = json.weather.main.temp/10 + 'ºC';
+                hum.textContent = 'Humidity ' + json.weather.main.humidity + '%';
+                weather.textContent = json.weather.weather[0].main;
+                wind.textContent = 'Wind speed: ' + json.weather.wind.speed + ' km/h';
 
-                root.append( paragraph, temp, hum, weather, wind);
+                const paragraph_aq = document.createElement('h2');
+                const param0 = document.createElement('div');
+                const param1 = document.createElement('div');
+                const gas = document.createElement('div');
+
+                paragraph_aq.textContent = 'Air quality ' + json.weather.name;
+                param0.textContent = json.air_quality.results[0].measurements[0].parameter + ' ' + json.air_quality.results[0].measurements[0].value + ' ' + json.air_quality.results[0].measurements[0].unit;
+                param1.textContent = json.air_quality.results[0].measurements[1].parameter + ' ' + json.air_quality.results[0].measurements[1].value + ' ' + json.air_quality.results[0].measurements[1].unit;
+                
+                root.append( paragraph, temp, hum, weather, wind, paragraph_aq, param0, param1);
                 document.body.append(root);
                 
                 /*

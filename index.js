@@ -72,8 +72,20 @@ app.get('/weather/:lat/:lon', async (request, response) => {
     const lat = request.params.lat;
     const lon = request.params.lon;
     console.log(lat, lon);
-    const api_url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=653f3861eb3012e12a7464b68fbbbb92`
-    const fetch_response = await fetch(api_url);
-    const json = await fetch_response.json();
+    const weather_url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=653f3861eb3012e12a7464b68fbbbb92`
+    const weather_response = await fetch(weather_url);
+    const w_json = await weather_response.json();
+   // response.json(w_json);
+
+    const aq_url = `https://api.openaq.org/v1/latest?coordinates=${lat},${lon}`
+    const aq_response = await fetch(aq_url);
+    const aq_json = await aq_response.json();
+
+    const json = {
+        weather: w_json,
+        air_quality: aq_json,
+    };
+
     response.json(json);
+    
 });
