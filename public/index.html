@@ -58,6 +58,22 @@
                 const response = await fetch(api_url);
                 const json = await response.json();
                 console.log('OW stuff', json);
+
+                const paragraph = document.createElement('p');
+                const temp = document.createElement('div');
+                const hum = document.createElement('div');
+                const weather = document.createElement('div');
+                const wind = document.createElement('div');
+                const root = document.createElement('div');
+
+                paragraph.textContent = 'Weather today in ' + json.name;
+                temp .textContent = json.main.temp/10 + 'ºC';
+                hum.textContent = 'Humidity ' + json.main.humidity + '%';
+                weather.textContent = json.weather[0].main;
+                wind.textContent = 'Wind speed: ' + json.wind.speed + ' km/h';
+
+                root.append( paragraph, temp, hum, weather, wind);
+                document.body.append(root);
                 
                 /*
                 document.getElementById('latitude').textContent = lat;
