@@ -54,7 +54,7 @@
                 lat = position.coords.latitude;
                 lon = position.coords.longitude;
 
-                const api_url = `/weather`
+                const api_url = `/weather/${lat}/${lon}`;
                 const response = await fetch(api_url);
                 const json = await response.json();
                 console.log('OW stuff', json);
