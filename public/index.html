@@ -15,6 +15,12 @@
     integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
     crossorigin=""></script>
 
+    <style>
+        #myMap{
+            height: 300px;
+        }
+    </style>
+
     <title>Weather Data</title>
 </head>
 
@@ -25,11 +31,30 @@
         <input id="mood" value="mood"/>
         <button id="submit">Submit your mood</button>
 
+        <div id="myMap"></div>
+
     <div id="dataDBdisplay"></div>
 
     <script>
         "use strict";
-        
+
+        const mymap = L.map('myMap').setView([0, 0], 1);
+        const attribution =  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        const tileURL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const tiles = L.tileLayer( tileURL, { attribution });
+        var myIcon = L.icon({
+                            iconUrl: 'International_Space_Station.svg',
+                            iconSize: [38, 95],
+                            iconAnchor: [22, 94],
+                            popupAnchor: [-3, -76],
+                            shadowUrl: 'my-icon-shadow.png',
+                            shadowSize: [68, 95],
+                            shadowAnchor: [22, 94]
+                        });
+        const marker = L.marker([0, 0], {icon: myIcon}).addTo(mymap);
+
+        tiles.addTo(mymap);
+
         /* Location */
         async function submitLocation( lat, lon, mood, weather, aq ){
             const data = { lat, lon, mood, weather, aq };
@@ -57,6 +82,9 @@
                 console.log(position.coords.latitude, position.coords.longitude);
                 lat = position.coords.latitude;
                 lon = position.coords.longitude;
+
+                marker.setLatLng([lat, lon]);
+                mymap.setView([lat, lon]);
 
                 const api_url = `/weather/${lat}/${lon}`;
                 const response = await fetch(api_url);
@@ -132,6 +160,16 @@
                 date.textContent = dateString;
                 geo.textContent = `${item.lat}, ${item.lon}`;
 
+                // Display a marker on the map
+                const marker = L.marker([item.lat, item.lon], {icon: myIcon}).addTo(mymap);
+                const txt = `The weather round here in ${item.lat}, ${item.lon}is ...`;
+
+               /* is ${item.weatherData.summary},
+                with a temperature of ${item.weather.temperature} ºC. The PM concentration is of (${item.air_quality.parameter}) is
+                ${item.air_quality.value} ${item.air_quality.unit}, last read on ${item.air_quality.lastUpdated} */
+
+                marker.bindPopup(txt);
+                
                 root.append( paragraph, mood, geo, date);
                 document.body.append(root);
             });
