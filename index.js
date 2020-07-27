@@ -10,6 +10,10 @@ const fs = require('fs');
 // Include NeDB database
 const Datastore = require('nedb');
 
+require('dotenv').config();
+
+const api_key = process.env.API_KEY;
+
 
 let record = [];
 
@@ -69,10 +73,12 @@ app.get('/api', (request, response) => {
 })
 
 app.get('/weather/:lat/:lon', async (request, response) => {
+
+    console.log('api key ', api_key);
     const lat = request.params.lat;
     const lon = request.params.lon;
     console.log(lat, lon);
-    const weather_url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=653f3861eb3012e12a7464b68fbbbb92`
+    const weather_url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`
     const weather_response = await fetch(weather_url);
     const w_json = await weather_response.json();
    // response.json(w_json);
