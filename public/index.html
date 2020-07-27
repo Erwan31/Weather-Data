@@ -28,9 +28,11 @@
     <div id="dataDBdisplay"></div>
 
     <script>
+        "use strict";
+        
         /* Location */
-        async function submitLocation( lat, lon, mood ){
-            const data = { lat, lon, mood };
+        async function submitLocation( lat, lon, mood, weather, aq ){
+            const data = { lat, lon, mood, weather, aq };
             console.log('data send to server', data);
             const options = {
                 method:'POST',
@@ -45,11 +47,13 @@
         }
 
         let lat = 0, lon = 0;
+        let weatherData = {}, aq = {};
         
         if('geolocation' in navigator) {
             /* geolocation is available */
             console.log('geolocation available');
             navigator.geolocation.getCurrentPosition( async (position) => {
+                
                 console.log(position.coords.latitude, position.coords.longitude);
                 lat = position.coords.latitude;
                 lon = position.coords.longitude;
@@ -65,6 +69,9 @@
                 const weather = document.createElement('div');
                 const wind = document.createElement('div');
                 const root = document.createElement('div');
+
+                weatherData = json.weather;
+                aq = json.air_quality;
 
                 paragraph.textContent = 'Weather today in ' + json.weather.name;
                 temp.textContent = json.weather.main.temp/10 + 'ºC';
@@ -101,7 +108,7 @@
         buttonSubmit.addEventListener('click', () =>{
             const moodvar= document.getElementById("mood").value;
             console.log(mood);
-            submitLocation( lat, lon, moodvar );
+            submitLocation( lat, lon, moodvar, weatherData, aq );
         });
 
         // 2.5 -> Querying DB
